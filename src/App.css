@@ -7,6 +7,7 @@ body,
 #root {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   margin: 0;
 }
 
@@ -40,6 +41,7 @@ button {
 
   width: 100%;
   height: 100vh;
+  height: 100dvh;
 
   overflow: hidden;
 
@@ -866,6 +868,51 @@ button {
 
   cursor: not-allowed;
 }
+/* ==========================================================
+   WAKE BANNER
+   ========================================================== */
+
+.wake-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  padding: 10px 16px;
+
+  background: #2a2116;
+  color: #f1cb7a;
+  border-bottom: 1px solid #3a2f1c;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  text-align: center;
+}
+
+.wake-spinner {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+
+  border: 2px solid rgba(241, 203, 122, 0.3);
+  border-top-color: #f1cb7a;
+  border-radius: 50%;
+
+  animation: wake-spin 0.7s linear infinite;
+}
+
+@keyframes wake-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 
 /* ==========================================================
@@ -973,6 +1020,7 @@ button {
     width: 78%;
     max-width: 300px;
     height: 100vh;
+    height: 100dvh;
 
     transform: translateX(-100%);
     transition: transform 0.25s ease;

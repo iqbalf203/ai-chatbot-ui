@@ -29,6 +29,12 @@ import type {
 import "./App.css";
 
 
+// How long the initial conversations fetch must be pending
+// before we show the "waking up" banner. Keeps it from
+// flashing when the backend is already warm.
+const WAKE_INDICATOR_DELAY_MS = 1200;
+
+
 function App() {
 
   const [
@@ -58,6 +64,12 @@ function App() {
   const [
     isSidebarOpen,
     setIsSidebarOpen,
+  ] = useState(false);
+
+
+  const [
+    isWakingUp,
+    setIsWakingUp,
   ] = useState(false);
 
 
@@ -104,13 +116,23 @@ function App() {
   /*
    * Initial conversations load
    *
-   * We intentionally perform the state update inside the
-   * promise callback after the API request completes.
-   * This avoids the react-hooks/set-state-in-effect warning.
+   * This is the first request the app makes, so if the
+   * backend is cold-starting on Render, this is where it
+   * shows. We show a "waking up" banner only if it takes
+   * longer than WAKE_INDICATOR_DELAY_MS, so a warm backend
+   * never flashes it.
    * ==========================================================
    */
 
   useEffect(() => {
+
+    let didFinish = false;
+
+    const wakeTimer = setTimeout(() => {
+      if (!didFinish) {
+        setIsWakingUp(true);
+      }
+    }, WAKE_INDICATOR_DELAY_MS);
 
     getConversations()
       .then((response) => {
@@ -127,7 +149,21 @@ function App() {
           error
         );
 
+      })
+      .finally(() => {
+
+        didFinish = true;
+
+        clearTimeout(wakeTimer);
+
+        setIsWakingUp(false);
+
       });
+
+    return () => {
+      didFinish = true;
+      clearTimeout(wakeTimer);
+    };
 
   }, []);
 
@@ -499,6 +535,13 @@ function App() {
 
   return (
     <div className="app">
+
+      {isWakingUp && (
+        <div className="wake-banner">
+          <span className="wake-spinner" />
+          Starting up your assistant… this can take up to a minute.
+        </div>
+      )}
 
       <Sidebar
         conversations={
