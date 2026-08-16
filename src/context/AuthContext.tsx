@@ -39,6 +39,7 @@ export function AuthProvider({
 
   const [error, setError] =
     useState<string | null>(null);
+    console.log(error) // To test
 
   // =========================================================
   // Token helpers
