@@ -55,6 +55,12 @@ function App() {
   ] = useState(false);
 
 
+  const [
+    isSidebarOpen,
+    setIsSidebarOpen,
+  ] = useState(false);
+
+
   const activeConversation =
     conversations.find(
       (conversation) =>
@@ -143,6 +149,8 @@ function App() {
           setActiveConversationId(
             conversationId
           );
+
+          setIsSidebarOpen(false);
 
           setMessages([]);
 
@@ -355,6 +363,9 @@ function App() {
         );
 
 
+        setIsSidebarOpen(false);
+
+
         setMessages([]);
 
       } catch (error) {
@@ -509,6 +520,14 @@ function App() {
         onDeleteConversation={
           handleDeleteConversation
         }
+
+        isOpen={
+          isSidebarOpen
+        }
+
+        onClose={
+          () => setIsSidebarOpen(false)
+        }
       />
 
 
@@ -521,6 +540,10 @@ function App() {
 
           connectionStatus={
             connectionStatus
+          }
+
+          onMenuClick={
+            () => setIsSidebarOpen(true)
           }
         />
 

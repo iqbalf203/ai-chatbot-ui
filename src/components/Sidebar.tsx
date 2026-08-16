@@ -12,6 +12,10 @@ interface SidebarProps {
   // Backward-compatible props
   conversation?: Conversation;
   connectionStatus?: ConnectionStatus;
+
+  // Mobile drawer control
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 function Sidebar({
@@ -20,101 +24,122 @@ function Sidebar({
   onNewChat,
   onSelectConversation,
   onDeleteConversation,
+  isOpen = false,
+  onClose,
 }: SidebarProps) {
   return (
-    <aside className="sidebar">
-      {/* Header */}
-      <div className="sidebar-header">
-        <div className="logo">✦</div>
+    <>
+      {isOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => onClose?.()}
+        />
+      )}
 
-        <span>AI Assistant</span>
-      </div>
+      <aside className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
+        {/* Header */}
+        <div className="sidebar-header">
+          <div className="logo">✦</div>
 
-      {/* New Chat */}
-      <button
-        type="button"
-        className="new-chat-button"
-        onClick={() => onNewChat?.()}
-      >
-        <span>+</span>
-        <span>New chat</span>
-      </button>
+          <span>AI Assistant</span>
 
-      {/* Conversations */}
-      <div className="conversation-section">
-        <div className="conversation-title">
-          Recent conversations
+          <button
+            type="button"
+            className="sidebar-close-button"
+            aria-label="Close sidebar"
+            onClick={() => onClose?.()}
+          >
+            ×
+          </button>
         </div>
 
-        <div className="conversation-list">
-          {conversations.length === 0 ? (
-            <div className="no-conversations">
-              No conversations yet
-            </div>
-          ) : (
-            conversations.map((conversation) => {
-              const isActive =
-                conversation.id ===
-                activeConversationId;
+        {/* New Chat */}
+        <button
+          type="button"
+          className="new-chat-button"
+          onClick={() => onNewChat?.()}
+        >
+          <span>+</span>
+          <span>New chat</span>
+        </button>
 
-              return (
-                <div
-                  key={conversation.id}
-                  className={`conversation-item ${
-                    isActive ? "active" : ""
-                  }`}
-                  onClick={() =>
-                    onSelectConversation?.(
-                      conversation.id
-                    )
-                  }
-                >
-                  <span className="conversation-icon">
-                    ◇
-                  </span>
+        {/* Conversations */}
+        <div className="conversation-section">
+          <div className="conversation-title">
+            Recent conversations
+          </div>
 
-                  <span className="conversation-name">
-                    {conversation.title}
-                  </span>
+          <div className="conversation-list">
+            {conversations.length === 0 ? (
+              <div className="no-conversations">
+                No conversations yet
+              </div>
+            ) : (
+              conversations.map((conversation) => {
+                const isActive =
+                  conversation.id ===
+                  activeConversationId;
 
-                  <button
-                    type="button"
-                    className="delete-button"
-                    aria-label={`Delete ${conversation.title}`}
-                    onClick={(event) => {
-                      event.stopPropagation();
-
-                      onDeleteConversation?.(
+                return (
+                  <div
+                    key={conversation.id}
+                    className={`conversation-item ${
+                      isActive ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      onSelectConversation?.(
                         conversation.id
                       );
+                      onClose?.();
                     }}
                   >
-                    ×
-                  </button>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
+                    <span className="conversation-icon">
+                      ◇
+                    </span>
 
-      {/* Footer */}
-      <div className="sidebar-footer">
-        <div className="model-info">
-          <span className="model-dot" />
+                    <span className="conversation-name">
+                      {conversation.title}
+                    </span>
 
-          <div>
-            <strong>
-              Qwen 2.5 Coder
-            </strong>
+                    <button
+                      type="button"
+                      className="delete-button"
+                      aria-label={`Delete ${conversation.title}`}
+                      onClick={(event) => {
+                        event.stopPropagation();
 
-            <small>
-              Local model · Ollama
-            </small>
+                        onDeleteConversation?.(
+                          conversation.id
+                        );
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
-      </div>
-    </aside>
+
+        {/* Footer */}
+        <div className="sidebar-footer">
+          <div className="model-info">
+            <span className="model-dot" />
+
+            <div>
+              <strong>
+                Qwen 2.5 Coder
+              </strong>
+
+              <small>
+                Local model · Ollama
+              </small>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }
 

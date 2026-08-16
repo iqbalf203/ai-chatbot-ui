@@ -4,11 +4,13 @@ import type { ConnectionStatus } from "../hooks/useChatWebSocket";
 interface ChatHeaderProps {
   conversation?: Conversation;
   connectionStatus: ConnectionStatus;
+  onMenuClick?: () => void;
 }
 
 function ChatHeader({
   conversation,
   connectionStatus,
+  onMenuClick,
 }: ChatHeaderProps) {
   const getStatusText = () => {
     switch (connectionStatus) {
@@ -48,6 +50,15 @@ function ChatHeader({
   return (
     <header className="chat-header">
       <div className="chat-header-left">
+        <button
+          type="button"
+          className="menu-button"
+          aria-label="Open menu"
+          onClick={() => onMenuClick?.()}
+        >
+          ☰
+        </button>
+
         <div className="chat-title-icon">
           ✦
         </div>
