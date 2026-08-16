@@ -7,6 +7,7 @@ import {
 
 import type {
   SendMessageRequest,
+  StopGenerationRequest,
   WebSocketEvent,
 } from "../types/chat";
 
@@ -25,6 +26,9 @@ interface UseChatWebSocketResult {
   sendMessage: (
     content: string
   ) => string | null;
+  stopGeneration: (
+    messageId: string
+  ) => void;
   disconnect: () => void;
 }
 
@@ -228,9 +232,48 @@ export function useChatWebSocket(
   );
 
 
+  const stopGeneration = useCallback(
+    (messageId: string) => {
+
+      const socket =
+        socketRef.current;
+
+      if (
+        !socket ||
+        socket.readyState !==
+          WebSocket.OPEN
+      ) {
+
+        console.error(
+          "WebSocket is not connected"
+        );
+
+        return;
+      }
+
+      const payload: StopGenerationRequest =
+        {
+          type: "stop_generation",
+          message_id: messageId,
+        };
+
+      socket.send(
+        JSON.stringify(payload)
+      );
+
+      console.log(
+        "Sent stop_generation for message:",
+        messageId
+      );
+    },
+    []
+  );
+
+
   return {
     connectionStatus,
     sendMessage,
+    stopGeneration,
     disconnect,
   };
 }
