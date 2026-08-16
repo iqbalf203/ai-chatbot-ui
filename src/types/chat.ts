@@ -4,6 +4,7 @@ export type MessageStatus =
   | "sending"
   | "streaming"
   | "complete"
+  | "stopped"
   | "error";
 
 export interface ChatMessage {
@@ -48,20 +49,31 @@ export type WebSocketEvent =
       delta: string;
     }
   | {
+      type: "message_end";
+      message_id: string;
+    }
+  | {
       type: "message_complete";
       message_id: string;
       content: string;
     }
   | {
-      type: "message_end";
+      type: "generation_stopped";
       message_id: string;
+      content?: string;
     }
   | {
       type: "error";
       message?: string;
       code?: string;
+      message_id?: string;
     }
   | {
       type: "connected";
       conversation_id: string;
     };
+
+export interface StopGenerationRequest {
+  type: "stop_generation";
+  message_id: string;
+}

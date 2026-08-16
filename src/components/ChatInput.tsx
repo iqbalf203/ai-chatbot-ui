@@ -6,12 +6,18 @@ interface ChatInputProps {
     content: string
   ) => void;
 
+  onStop: () => void;
+
   disabled: boolean;
+
+  isStreaming: boolean;
 }
 
 function ChatInput({
   onSend,
+  onStop,
   disabled,
+  isStreaming,
 }: ChatInputProps) {
 
   const [
@@ -27,7 +33,8 @@ function ChatInput({
 
     if (
       !content ||
-      disabled
+      disabled ||
+      isStreaming
     ) {
       return;
     }
@@ -49,7 +56,9 @@ function ChatInput({
 
       event.preventDefault();
 
-      submit();
+      if (!isStreaming) {
+        submit();
+      }
     }
   };
 
@@ -68,22 +77,40 @@ function ChatInput({
           handleKeyDown
         }
         placeholder="Message your AI assistant..."
-        disabled={disabled}
+        disabled={
+          disabled ||
+          isStreaming
+        }
         rows={1}
       />
 
 
-      <button
-        className="send-button"
-        onClick={submit}
-        disabled={
-          disabled ||
-          !value.trim()
-        }
-        aria-label="Send message"
-      >
-        ↑
-      </button>
+      {isStreaming ? (
+
+        <button
+          className="stop-button"
+          onClick={onStop}
+          aria-label="Stop generation"
+          title="Stop the AI response"
+        >
+          ⏹
+        </button>
+
+      ) : (
+
+        <button
+          className="send-button"
+          onClick={submit}
+          disabled={
+            disabled ||
+            !value.trim()
+          }
+          aria-label="Send message"
+        >
+          ↑
+        </button>
+
+      )}
 
     </div>
   );

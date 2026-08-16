@@ -44,10 +44,15 @@ function MessageList({
       ))}
 
       {isTyping && (
-        <div className="typing-indicator">
-          <span />
-          <span />
-          <span />
+        <div className="loading-container">
+          <div className="typing-indicator">
+            <span />
+            <span />
+            <span />
+          </div>
+          <p className="loading-text">
+            AI is thinking...
+          </p>
         </div>
       )}
 

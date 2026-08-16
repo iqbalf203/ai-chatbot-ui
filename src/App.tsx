@@ -27,6 +27,10 @@ import type {
 } from "./types/chat";
 
 import "./App.css";
+import "./auth.css";
+
+// import { AuthPage } from "./pages/AuthPage";
+// import { useAuth } from "./context/AuthContext";
 
 
 // How long the initial conversations fetch must be pending
@@ -35,7 +39,7 @@ import "./App.css";
 const WAKE_INDICATOR_DELAY_MS = 1200;
 
 
-function App() {
+function ChatApp() {
 
   const [
     conversations,
@@ -59,6 +63,12 @@ function App() {
     isTyping,
     setIsTyping,
   ] = useState(false);
+
+
+  const [
+    streamingMessageId,
+    setStreamingMessageId,
+  ] = useState<string | null>(null);
 
 
   const [
@@ -247,6 +257,10 @@ function App() {
 
             setIsTyping(true);
 
+            setStreamingMessageId(
+              event.message_id
+            );
+
             setMessages(
               (current) => [
                 ...current,
@@ -316,6 +330,8 @@ function App() {
 
             setIsTyping(false);
 
+            setStreamingMessageId(null);
+
             setMessages(
               (current) =>
                 current.map(
@@ -336,6 +352,41 @@ function App() {
             break;
 
 
+          case "generation_stopped":
+
+            console.log(
+              "Generation stopped for message:",
+              event.message_id
+            );
+
+            setIsTyping(false);
+
+            setStreamingMessageId(null);
+
+            setMessages(
+              (current) =>
+                current.map(
+                  (message) =>
+                    message.id ===
+                    event.message_id
+                      ? {
+                          ...message,
+
+                          status: "stopped",
+
+                          content:
+                            event.content ||
+                            message.content,
+                        }
+                      : message
+                )
+            );
+
+            loadConversations();
+
+            break;
+
+
           case "error":
 
             console.error(
@@ -344,6 +395,26 @@ function App() {
             );
 
             setIsTyping(false);
+
+            setStreamingMessageId(null);
+
+            if (event.message_id) {
+
+              setMessages(
+                (current) =>
+                  current.map(
+                    (message) =>
+                      message.id ===
+                      event.message_id
+                        ? {
+                            ...message,
+
+                            status: "error",
+                          }
+                        : message
+                  )
+              );
+            }
 
             break;
 
@@ -363,10 +434,27 @@ function App() {
   const {
     connectionStatus,
     sendMessage,
+    stopGeneration,
   } = useChatWebSocket(
     activeConversationId,
     handleWebSocketEvent
   );
+
+
+  const handleStopGeneration =
+    useCallback(() => {
+
+      if (streamingMessageId) {
+
+        stopGeneration(
+          streamingMessageId
+        );
+      }
+
+    }, [
+      streamingMessageId,
+      stopGeneration,
+    ]);
 
 
   /*
@@ -643,10 +731,18 @@ function App() {
               handleSendMessage
             }
 
+            onStop={
+              handleStopGeneration
+            }
+
             disabled={
               connectionStatus !==
-                "connected" ||
-              isTyping
+                "connected"
+            }
+
+            isStreaming={
+              streamingMessageId !==
+              null
             }
           />
 
@@ -659,4 +755,4 @@ function App() {
 }
 
 
-export default App;
+export default ChatApp;

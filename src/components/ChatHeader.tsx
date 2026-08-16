@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { Conversation } from "../types/chat";
 import type { ConnectionStatus } from "../hooks/useChatWebSocket";
+import { useAuth } from "../context/AuthContext";
 
 interface ChatHeaderProps {
   conversation?: Conversation;
@@ -12,6 +14,10 @@ function ChatHeader({
   connectionStatus,
   onMenuClick,
 }: ChatHeaderProps) {
+  const { user, signOut } = useAuth();
+  const [showUserMenu, setShowUserMenu] =
+    useState(false);
+
   const getStatusText = () => {
     switch (connectionStatus) {
       case "connected":
@@ -45,6 +51,11 @@ function ChatHeader({
       default:
         return "disconnected";
     }
+  };
+
+  const handleLogout = () => {
+    signOut();
+    setShowUserMenu(false);
   };
 
   return (
@@ -81,12 +92,54 @@ function ChatHeader({
       </div>
 
       <div className="chat-header-right">
-        <div className="model-badge">
+        {/* <div className="model-badge">
           <span>Qwen 2.5 Coder</span>
           <span className="model-badge-subtitle">
             Local
           </span>
-        </div>
+        </div> */}
+
+        {user && (
+          <div className="user-menu-wrapper">
+            <button
+              type="button"
+              className="user-menu-button"
+              onClick={() =>
+                setShowUserMenu(!showUserMenu)
+              }
+              title={user.name}
+            >
+              <span className="user-avatar">
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()}
+              </span>
+            </button>
+
+            {showUserMenu && (
+              <div className="user-menu-dropdown">
+                <div className="user-menu-header">
+                  <div className="user-menu-name">
+                    {user.name}
+                  </div>
+                  <div className="user-menu-email">
+                    {user.email}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="user-menu-item user-menu-logout"
+                  onClick={handleLogout}
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

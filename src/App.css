@@ -558,6 +558,16 @@ button {
 }
 
 
+.message-row.message-stopped {
+  opacity: 0.85;
+}
+
+
+.message-row.message-error {
+  opacity: 0.7;
+}
+
+
 .message-avatar {
   display: flex;
   align-items: center;
@@ -706,16 +716,63 @@ button {
 }
 
 
+.stopped-indicator {
+  display: inline-block;
+
+  margin-left: 8px;
+
+  color: #f59e0b;
+
+  font-size: 14px;
+
+  opacity: 0.7;
+}
+
+
+.error-indicator {
+  display: inline-block;
+
+  margin-left: 8px;
+
+  color: #ef4444;
+
+  font-size: 14px;
+
+  opacity: 0.8;
+}
+
+
 /* ==========================================================
    TYPING
    ========================================================== */
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-left: 45px;
+
+  align-items: flex-start;
+}
+
+
+.loading-text {
+  margin: 0;
+
+  padding: 0;
+
+  font-size: 13px;
+
+  color: #a5abb4;
+}
+
 
 .typing-indicator {
   display: flex;
 
   gap: 5px;
-
-  margin-left: 45px;
 }
 
 
@@ -867,6 +924,50 @@ button {
   opacity: 0.3;
 
   cursor: not-allowed;
+}
+
+
+.stop-button {
+  position: absolute;
+
+  right: 10px;
+  bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #ef4444;
+
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  transition:
+    background
+    0.2s,
+    transform
+    0.15s;
+}
+
+
+.stop-button:hover {
+  background: #dc2626;
+
+  transform: scale(1.05);
+}
+
+
+.stop-button:active {
+  transform: scale(0.95);
 }
 /* ==========================================================
    WAKE BANNER

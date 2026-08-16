@@ -14,12 +14,51 @@ function ChatMessage({
 }: ChatMessageProps) {
   const isUser = message.role === "user";
 
+  const statusIndicator = () => {
+    switch (message.status) {
+      case "streaming":
+        return (
+          <span className="streaming-cursor">
+            ▋
+          </span>
+        );
+      case "stopped":
+        return (
+          <span
+            className="stopped-indicator"
+            title="Generation was stopped"
+          >
+            ⏹
+          </span>
+        );
+      case "error":
+        return (
+          <span
+            className="error-indicator"
+            title="An error occurred"
+          >
+            ⚠
+          </span>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div
       className={`message-row ${
         isUser
           ? "message-user"
           : "message-assistant"
+      } ${
+        message.status === "stopped"
+          ? "message-stopped"
+          : ""
+      } ${
+        message.status === "error"
+          ? "message-error"
+          : ""
       }`}
     >
       <div className="message-avatar">
@@ -43,11 +82,7 @@ function ChatMessage({
           )}
         </div>
 
-        {message.status === "streaming" && (
-          <span className="streaming-cursor">
-            ▋
-          </span>
-        )}
+        {statusIndicator()}
       </div>
     </div>
   );
